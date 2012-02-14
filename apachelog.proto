@@ -1,0 +1,19 @@
+message LogEntry {
+  optional string remote_address = 1;
+  optional string local_address = 2;
+  optional string remote_logname = 3;
+  optional string remote_user = 4;
+  optional string filename = 5;
+  optional string unparsed_uri = 6;
+  optional string method = 7;
+  optional string protocol = 8;
+  optional uint32 status = 9;
+  optional string handler = 10;
+  optional uint32 bytes_sent = 11;
+  optional string cookies = 12;
+  optional string user_agent = 13;
+  optional string virtual_host = 14;
+  optional string server_name = 15;
+  optional uint64 request_time = 16;
+  optional string referrer = 17;
+}
