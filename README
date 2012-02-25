@@ -15,18 +15,15 @@ works for you, great!  If not, prepare to get your hands dirty.
 
 -- Log path
 
-I haven't gone to the trouble of adding an Apache config directive to 
-set the log location yet.  If /var/log/httpd/proto.log is not what you 
-want, I would recommend that you change it in the top of protolog.c 
-first.
+Use the ProtoLog directive in your config file to tell this module
+where to log.  If you install this module and nothing happens, odds
+are you forgot to add this directive somewhere!
 
+  ProtoLog /var/log/httpd/proto.log
 
--- Scope
-
-This module, at present, logs everything from every part of your web 
-server.  You might be used to "CustomLog" honoring VirtualHost scope, 
-for example.  This module definitely does not.  If something hits your 
-web server, it will be logged by this module.
+This will work both at the global level and in VirtualHost containers.
+If a VirtualHost does not contain a ProtoLog entry, it will use the
+global log(s).
 
 
 ---------------------------------------------------------------------
