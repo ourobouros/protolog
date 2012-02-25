@@ -229,7 +229,7 @@ static int write_serialized_msg(request_rec* r, const char* msg,
     ret = write_to_log_array(r, pls->server_proto_logs, netstring, ns_len);
 
     free(netstring);
-    return OK;
+    return ret;
   }
 
   free(netstring);
