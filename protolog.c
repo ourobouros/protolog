@@ -236,37 +236,57 @@ static int write_serialized_msg(request_rec* r, const char* msg,
   return OK;
 }
 
+static void SET_BYTES(ProtobufCBinaryData* bytes,
+                      protobuf_c_boolean* has_field, char* str) {
+  if (str == NULL) {
+    bytes->len = 0;
+    bytes->data = NULL;
+    *has_field = 0;
+    return;
+  }
+
+  bytes->len = strlen(str);
+  bytes->data = (uint8_t*) str;
+  *has_field = 1;
+}
+
+/* Resort to some macro magic to make this somewhat cleaner. */
+#define SET_BYTES(X, Y) SET_BYTES(&msg->X, &msg->has_ ## X, Y)
+
 static void populate_log_entry(request_rec* r, LogEntry* msg) {
-  msg->remote_address = r->connection->remote_ip;
-  msg->local_address = r->connection->local_ip;
-  msg->remote_logname = (char*) ap_get_remote_logname(r);
-  msg->remote_user = r->user;
-  msg->filename = r->filename;
-  msg->unparsed_uri = r->unparsed_uri;
-  msg->method = (char*) r->method;
-  msg->protocol = r->protocol;
+  SET_BYTES(remote_address, r->connection->remote_ip);
+  SET_BYTES(local_address, r->connection->local_ip);
+  SET_BYTES(remote_logname, (char*) ap_get_remote_logname(r));
+  SET_BYTES(remote_user, r->user);
+  SET_BYTES(filename, r->filename);
+  SET_BYTES(unparsed_uri, r->unparsed_uri);
+  SET_BYTES(method, (char*) r->method);
+  SET_BYTES(protocol, (char*) r->protocol);
 
   msg->status = r->status;
   msg->has_status = 1;
 
-  msg->handler = (char*) r->handler;
+  SET_BYTES(handler, (char*) r->handler);
 
   msg->has_bytes_sent = 1;
   msg->bytes_sent = r->bytes_sent;
 
-  msg->cookies = (char*) apr_table_get(r->headers_in, kCookieHeader);
-  msg->user_agent = (char*) apr_table_get(r->headers_in, kUserAgentHeader);
-  msg->virtual_host = r->server->server_hostname;
-  msg->server_name = (char*) ap_get_server_name(r);
+  SET_BYTES(cookies, (char*) apr_table_get(r->headers_in, kCookieHeader));
+
+  SET_BYTES(user_agent,
+            (char*) apr_table_get(r->headers_in, kUserAgentHeader));
+
+  SET_BYTES(virtual_host, r->server->server_hostname);
+  SET_BYTES(server_name, (char*) ap_get_server_name(r));
 
   msg->request_time = r->request_time;
   msg->has_request_time = 1;
 
-  msg->referrer = (char*) apr_table_get(r->headers_in, kReferrerHeader);
+  SET_BYTES(referrer, (char*) apr_table_get(r->headers_in, kReferrerHeader));
 
   /* Try 'em both, just in case... */
-  if (!msg->referrer) {
-    msg->referrer = (char*) apr_table_get(r->headers_in, kRefererHeader);
+  if (msg->referrer.len == 0) {
+    SET_BYTES(referrer, (char*) apr_table_get(r->headers_in, kRefererHeader));
   }
 }
 
