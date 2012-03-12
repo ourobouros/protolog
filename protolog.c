@@ -236,7 +236,7 @@ static int write_serialized_msg(request_rec* r, const char* msg,
   return OK;
 }
 
-static void SET_BYTES(ProtobufCBinaryData* bytes,
+static void set_bytes(ProtobufCBinaryData* bytes,
                       protobuf_c_boolean* has_field, char* str) {
   if (str == NULL) {
     bytes->len = 0;
@@ -251,7 +251,7 @@ static void SET_BYTES(ProtobufCBinaryData* bytes,
 }
 
 /* Resort to some macro magic to make this somewhat cleaner. */
-#define SET_BYTES(X, Y) SET_BYTES(&msg->X, &msg->has_ ## X, Y)
+#define SET_BYTES(X, Y) set_bytes(&msg->X, &msg->has_ ## X, Y)
 
 static void populate_log_entry(request_rec* r, LogEntry* msg) {
   SET_BYTES(remote_address, r->connection->remote_ip);
