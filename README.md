@@ -1,4 +1,4 @@
-protolog, or binary logging for Apache using protocol buffers.
+# protolog, or binary logging for Apache using protocol buffers.
 
 If you're reading this, odds are good that you are looking for a way to 
 log hits from your Apache web server without generating ASCII spew 
@@ -6,30 +6,27 @@ which is hard to parse later.  If so, you are in the right place.  Here
 are some notes about making it work.
 
 
-----------------------------------------------------------------------
---- Limitations ------------------------------------------------------
+## Limitations
 
 This software definitely does not attempt to solve every problem.  If it 
 works for you, great!  If not, prepare to get your hands dirty.
 
 
--- Log path
+### Log path
 
 Use the ProtoLog directive in your config file to tell this module
 where to log.  If you install this module and nothing happens, odds
 are you forgot to add this directive somewhere!
 
-  ProtoLog /var/log/httpd/proto.log
+    ProtoLog /var/log/httpd/proto.log
 
 This will work both at the global level and in VirtualHost containers.
 If a VirtualHost does not contain a ProtoLog entry, it will use the
 global log(s).
 
+## Dependencies
 
----------------------------------------------------------------------
---- Dependencies ----------------------------------------------------
-
--- protobuf-c
+### protobuf-c
 
 You'll need protobuf-c installed to make this work.  Some distributions 
 package this and others do not.  It's not hard to build from source, 
@@ -37,20 +34,20 @@ though.  Once "protoc-c" is in your path, it should be usable to build
 protolog.
 
 
--- Apache development stuff
+### Apache development stuff
 
 You also need a working installation of Apache with the dev stuff 
 included.  This may mean installing extra packages on your system.  If 
 you have "apxs" in your path, you're probably set.
 
 
--- Apache versions
+### Apache versions
 
 I wrote this against Apache 2.2, but it might work on other versions.  
 Your mileage may vary.
 
 
--- Mac builds and protobuf-c
+### Mac builds and protobuf-c
 
 If you really want to run this on a Mac install of Apache for some 
 reason, use Macports to install protobuf-c first, then add 
@@ -63,21 +60,17 @@ If Macports is not your thing, you'll have to find and add the
 appropriate paths for the includes and libraries, respectively.
 I don't feel like torturing myself with autoconf today.
 
-
----------------------------------------------------------------------
---- Build -----------------------------------------------------------
+## Build
 
 "make" should do the right thing.  There isn't much going on here.
 
-
----------------------------------------------------------------------
---- Installation ----------------------------------------------------
+## Installation
 
 This is really simple.  Drop the protolog.so found in .libs into some 
 path like /etc/httpd/modules, then add this to your Apache config 
 somewhere:
 
-  LoadModule protolog_module modules/protolog.so
+    LoadModule protolog_module modules/protolog.so
 
 Adjust the path to suit your system, naturally.  Personally, I have that 
 one line in /etc/httpd/conf.d/protolog.conf to keep it separate from 
@@ -86,9 +79,7 @@ other things.
 After that, restart your server and check the log file.  It should pop 
 into existence and then start growing automatically.
 
-
----------------------------------------------------------------------
---- Encoding --------------------------------------------------------
+## Encoding
 
 The log file will contain a series of "netstrings", each containing a 
 protocol buffer message which has been serialized to a stream of bytes.
@@ -108,8 +99,7 @@ More on protocol buffers can be found at the following URL:
 http://code.google.com/p/protobuf.
 
 
----------------------------------------------------------------------
---- Fields ----------------------------------------------------------
+## Fields
 
 The fields in apachelog.proto are primarily the things I found 
 interesting while first writing this.  It's trivial to add more, and 
@@ -126,9 +116,7 @@ expect compatibility down the road.  All I can say about that is to
 repeat myself from before: don't do it.  Work together to coordinate 
 these things, and analysis tool compatibility will be your reward.
 
-
----------------------------------------------------------------------
---- Decoding --------------------------------------------------------
+## Decoding
 
 Assuming you have a simple state machine to extract the data from inside 
 each netstring, then you can just pass the <data> directly to protobuf.
@@ -143,9 +131,7 @@ In C++, it looks like this:
 Java and Python will be slightly different but the same general 
 principle applies.
 
-
----------------------------------------------------------------------
---- Contact ---------------------------------------------------------
+## Contact
 
 Need to send me a message?  Try this first:
 
